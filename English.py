@@ -2,42 +2,71 @@ from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 
-def truncate_text(draw, text, font, max_width=600):
-    text_bbox = draw.textbbox((0, 0), text, font=font)
-    if text_bbox[2] - text_bbox[0] > max_width:
-        while text_bbox[2] - text_bbox[0] > max_width:
-            text = text[:-1]
-            text_bbox = draw.textbbox((0, 0), text + '...', font=font)
-        text = text.strip() + '...'
-    return text
+class ImageGenerator:
+    def __init__(self, template_path, overlay_path, font_bold_path, font_regular_path):
+        self.template_path = template_path
+        self.overlay_path = overlay_path
+        self.font_bold_path = font_bold_path
+        self.font_regular_path = font_regular_path
+        self.max_text_width = 600  # Maximum text width
 
-img = cv2.imread('C:/Users/MSI/Desktop/template.png')
-img_pil = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-overlay = Image.open("C:/Users/MSI/Desktop/gg.png")
-overlay = overlay.resize((200, 200), Image.Resampling.LANCZOS)
-position = (50, 400)
-img_pil.paste(overlay, position, overlay)
-font_path1 = 'C:/Users/MSI/Desktop/Inter_18pt-SemiBold.ttf'
-font_path2 = 'C:/Users/MSI/Desktop/Inter_18pt-Regular.ttf'
-font1 = ImageFont.truetype(font_path1, 50)
-font2 = ImageFont.truetype(font_path2, 30)
-font3 = ImageFont.truetype(font_path2, 35)
-draw = ImageDraw.Draw(img_pil)
+    def truncate_text(self, draw, text, font):
+        text_bbox = draw.textbbox((0, 0), text, font=font)
+        if text_bbox[2] - text_bbox[0] > self.max_text_width:
+            while text_bbox[2] - text_bbox[0] > self.max_text_width:
+                text = text[:-1]
+                text_bbox = draw.textbbox((0, 0), text + '...', font=font)
+            text = text.strip() + '...'
+        return text
 
-name = input('Name: ')
-profession = input('Profession: ')
-title_rank = input('Title/Rank: ')
-max_width = 600  #
+    def generate_image(self, name, profession, title_rank, output_path):
+        # Uploading and preparing the image
+        background_image = cv2.imread(self.template_path)
+        background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
 
-name = truncate_text(draw, name, font1, max_width)
-profession = truncate_text(draw, profession, font2, max_width)
-title_rank = truncate_text(draw, title_rank, font3, max_width)
-draw.text((270, 415), name, font=font1, fill=(255, 255, 255))
-draw.text((270, 490), profession, font=font2, fill=(169, 169, 165))
-draw.text((270, 540), title_rank, font=font3, fill=(255, 255, 255))
+        # Uploading and resizing an overlay (logo or other image)
+        overlay_image = Image.open(self.overlay_path)
+        overlay_image = overlay_image.resize((200, 200), Image.Resampling.LANCZOS)
 
-img = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2BGR)
-cv2.imshow('Result', img)
-cv2.imwrite('C:/Users/MSI/Desktop/img2.jpeg', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+        # Position for overlay insertion
+        overlay_position = (50, 400)
+        background_pil.paste(overlay_image, overlay_position, overlay_image)
+
+        # correction fonts
+        font_name = ImageFont.truetype(self.font_bold_path, 50)
+        font_profession = ImageFont.truetype(self.font_regular_path, 30)
+        font_title_rank = ImageFont.truetype(self.font_regular_path, 35)
+
+        # Creating an object for drawing
+        draw = ImageDraw.Draw(background_pil)
+
+        # Processing text for placement on an image
+        name = self.truncate_text(draw, name, font_name)
+        profession = self.truncate_text(draw, profession, font_profession)
+        title_rank = self.truncate_text(draw, title_rank, font_title_rank)
+
+        # Overlaying text on top of an image
+        draw.text((270, 415), name, font=font_name, fill=(255, 255, 255))
+        draw.text((270, 490), profession, font=font_profession, fill=(169, 169, 165))
+        draw.text((270, 540), title_rank, font=font_title_rank, fill=(255, 255, 255))
+
+        # Convert the image back to OpenCV format and save it
+        result_image = cv2.cvtColor(np.array(background_pil), cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, result_image)
+        cv2.imshow('Result', result_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+image_generator = ImageGenerator(
+    template_path='C:/Users/MSI/Desktop/template.png',
+    overlay_path='C:/Users/MSI/Desktop/gg.png',
+    font_bold_path='C:/Users/MSI/Desktop/Inter_18pt-SemiBold.ttf',
+    font_regular_path='C:/Users/MSI/Desktop/Inter_18pt-Regular.ttf'
+)
+# Image generation
+image_generator.generate_image(
+    name='John Doe',
+    profession='Software Engineer',
+    title_rank='Senior Developer',
+    output_path='C:/Users/MSI/Desktop/result_image.jpeg'
+)
