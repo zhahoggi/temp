@@ -24,7 +24,7 @@ class ImageGenerator:
         background_image = cv2.imread(self.template_path)
         background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
 
-        # Uploading and resizing an overlay
+        # Uploading and resizing an overlay (logo or other image)
         overlay_image = Image.open(self.overlay_path)
         overlay_image = overlay_image.resize((200, 200), Image.Resampling.LANCZOS)
 
@@ -32,7 +32,7 @@ class ImageGenerator:
         overlay_position = (50, 400)
         background_pil.paste(overlay_image, overlay_position, overlay_image)
 
-        # correction fonts
+        # Font customization
         font_name = ImageFont.truetype(self.font_bold_path, 50)
         font_profession = ImageFont.truetype(self.font_regular_path, 30)
         font_title_rank = ImageFont.truetype(self.font_regular_path, 35)
@@ -56,17 +56,3 @@ class ImageGenerator:
         cv2.imshow('Result', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
-image_generator = ImageGenerator(
-    template_path='C:/Users/MSI/Desktop/template.png',
-    overlay_path='C:/Users/MSI/Desktop/gg.png',
-    font_bold_path='C:/Users/MSI/Desktop/Inter_18pt-SemiBold.ttf',
-    font_regular_path='C:/Users/MSI/Desktop/Inter_18pt-Regular.ttf'
-)
-# Image generation
-image_generator.generate_image(
-    name='John Doe',
-    profession='Software Engineer',
-    title_rank='Senior Developer',
-    output_path='C:/Users/MSI/Desktop/result_image.jpeg'
-)
