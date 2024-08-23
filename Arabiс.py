@@ -5,8 +5,8 @@ from bidi.algorithm import get_display
 import numpy as np  
 
 class ArabicImageGenerator:
+    # Initialize paths for the template, overlay, and fonts
     def __init__(self, template_path, overlay_path, font_bold_path, font_regular_path):
-        # Initialize paths for the template, overlay, and fonts
         self.template_path = template_path
         self.overlay_path = overlay_path
         self.font_bold_path = font_bold_path
