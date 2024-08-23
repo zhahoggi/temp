@@ -3,6 +3,7 @@ import cv2
 import arabic_reshaper  
 from bidi.algorithm import get_display  
 import numpy as np  
+
 class ArabicImageGenerator:
     def __init__(self, template_path, overlay_path, font_bold_path, font_regular_path):
         # Initialize paths for the template, overlay, and fonts
@@ -10,7 +11,7 @@ class ArabicImageGenerator:
         self.overlay_path = overlay_path
         self.font_bold_path = font_bold_path
         self.font_regular_path = font_regular_path
-
+        
     # Method to truncate text if it's too long
     def truncate_text(self, text, max_chars=27):
         reshaped_text = arabic_reshaper.reshape(text)  
