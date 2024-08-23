@@ -24,7 +24,7 @@ class ImageGenerator:
         background_image = cv2.imread(self.template_path)
         background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
 
-        # Uploading and resizing an overlay (logo or other image)
+        # Uploading and resizing an overlay
         overlay_image = Image.open(self.overlay_path)
         overlay_image = overlay_image.resize((200, 200), Image.Resampling.LANCZOS)
 
