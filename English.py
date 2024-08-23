@@ -3,6 +3,7 @@ import cv2
 import numpy as np
 
 class ImageGenerator:
+    # Initialize paths for the template, overlay, and fonts
     def __init__(self, template_path, overlay_path, font_bold_path, font_regular_path):
         self.template_path = template_path
         self.overlay_path = overlay_path
@@ -10,6 +11,7 @@ class ImageGenerator:
         self.font_regular_path = font_regular_path
         self.max_text_width = 600  # Maximum text width
 
+     # Method to truncate text if it's too long
     def truncate_text(self, draw, text, font):
         text_bbox = draw.textbbox((0, 0), text, font=font)
         if text_bbox[2] - text_bbox[0] > self.max_text_width:
