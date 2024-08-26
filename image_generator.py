@@ -24,7 +24,6 @@ class ImageGenerator:
         self.NAME = name
         self.COMPANY = company
         self.POSITION = position
-        self.IMAGE_GENERATOR = None
 
     # Language definition
     def select_language(self):
@@ -52,14 +51,14 @@ class ImageGenerator:
         # Generate the image using the configured generator
         self.IMAGE_GENERATOR.generate_image(
             name=self.NAME,
-            company=self.COMPANY,  # Using the 'COMPANY' variable
-            position=self.POSITION,  # Using the 'POSITION' variable
+            company=self.COMPANY,  
+            position=self.POSITION,  
             output_path=OUTPUT_FILE_PATH
         )
 
 # Example usage:
-#service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
-#service_arabic.generate_image()
+service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
+service_arabic.generate_image()
 
-service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
-service_english.generate_image()
+#service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
+#service_english.generate_image()
