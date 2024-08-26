@@ -7,10 +7,10 @@ import numpy as np
 class ArabicImageGenerator:
     def __init__(self, template_path, avatar_path, font_bold_path, font_regular_path):
         # Initialize paths for the template, avatar, and fonts
-        self.TEMPLATE_PATH = template_path
-        self.AVATAR_PATH = avatar_path
-        self.FONT_BOLD_PATH = font_bold_path
-        self.FONT_REGULAR_PATH = font_regular_path
+        self.template_path = template_path
+        self.avatar_path = avatar_path
+        self.font_bold_path = font_bold_path
+        self.font_regular_path = font_regular_path
 
     # Method to truncate text if it's too long
     def truncate_text(self, text, max_chars=27):
@@ -42,10 +42,10 @@ class ArabicImageGenerator:
 
     # Method to add Arabic text to the image at specified positions
     def add_arabic_text(self, draw, text, font, initial_y_position, fill_color, image_width, text_offset=270):
-        MAX_WIDTH = image_width - text_offset - 30
-        lines = self.wrap_text(draw, text, font, MAX_WIDTH)
+        max_width = image_width - text_offset - 30
+        lines = self.wrap_text(draw, text, font, max_width)
         y_position = initial_y_position
-        LINE_HEIGHT = draw.textbbox((0, -20), "A", font=font)[3]
+        line_height = draw.textbbox((0, -20), "A", font=font)[3]
 
         for line in lines:
             truncated_text = self.truncate_text(line)
@@ -53,42 +53,42 @@ class ArabicImageGenerator:
             text_width = text_bbox[2] - text_bbox[0]
             text_position = (image_width - text_width - text_offset, y_position)
             draw.text(text_position, truncated_text, font=font, fill=fill_color)
-            y_position += LINE_HEIGHT + 5  # Move to the next line
+            y_position += line_height + 5  # Move to the next line
 
     # Main method to generate the image with the provided details
     def generate_image(self, name, company, position, output_path):
-        BACKGROUND_IMAGE = cv2.imread(self.TEMPLATE_PATH)
-        BACKGROUND_PIL = Image.fromarray(cv2.cvtColor(BACKGROUND_IMAGE, cv2.COLOR_BGR2RGB))
+        background_image = cv2.imread(self.template_path)
+        background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
 
         # Load and resize the avatar image (e.g., a logo)
-        AVATAR_IMAGE = Image.open(self.AVATAR_PATH).resize((200, 200), Image.Resampling.LANCZOS)
-        BACKGROUND_PIL.paste(AVATAR_IMAGE, (980, 400), AVATAR_IMAGE)
+        avatar_image = Image.open(self.avatar_path).resize((200, 200), Image.Resampling.LANCZOS)
+        background_pil.paste(avatar_image, (980, 400), avatar_image)
 
         # Set up fonts for name, company, and position
-        FONT_NAME = ImageFont.truetype(self.FONT_BOLD_PATH, 50)
-        FONT_COMPANY = ImageFont.truetype(self.FONT_REGULAR_PATH, 30)
-        FONT_POSITION = ImageFont.truetype(self.FONT_REGULAR_PATH, 35)
-        draw = ImageDraw.Draw(BACKGROUND_PIL)
+        font_name = ImageFont.truetype(self.font_bold_path, 50)
+        font_company = ImageFont.truetype(self.font_regular_path, 30)
+        font_position = ImageFont.truetype(self.font_regular_path, 35)
+        draw = ImageDraw.Draw(background_pil)
 
-        IMAGE_WIDTH = BACKGROUND_PIL.width
+        image_width = background_pil.width
         # Adjust text position based on the length of the name
         if len(name) < 22:
-            NAME_Y_POSITION = 400
-            COMPANY_Y_POSITION = 480
-            POSITION_Y_POSITION = 530
+            name_y_position = 400
+            company_y_position = 480
+            position_y_position = 530
         else:
-            NAME_Y_POSITION = 370
-            COMPANY_Y_POSITION = 490
-            POSITION_Y_POSITION = 530
+            name_y_position = 370
+            company_y_position = 490
+            position_y_position = 530
 
         # Add the text to the image
-        self.add_arabic_text(draw, name, FONT_NAME, NAME_Y_POSITION, (255, 255, 255), IMAGE_WIDTH)
-        self.add_arabic_text(draw, company, FONT_COMPANY, COMPANY_Y_POSITION, (169, 169, 165), IMAGE_WIDTH)
-        self.add_arabic_text(draw, position, FONT_POSITION, POSITION_Y_POSITION, (255, 255, 255), IMAGE_WIDTH)
+        self.add_arabic_text(draw, name, font_name, name_y_position, (255, 255, 255), image_width)
+        self.add_arabic_text(draw, company, font_company, company_y_position, (169, 169, 165), image_width)
+        self.add_arabic_text(draw, position, font_position, position_y_position, (255, 255, 255), image_width)
 
         # Convert the image back to OpenCV format and save it
-        RESULT_IMAGE = cv2.cvtColor(np.array(BACKGROUND_PIL), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, RESULT_IMAGE)
-        cv2.imshow('Result', RESULT_IMAGE)
+        result_image = cv2.cvtColor(np.array(background_pil), cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, result_image)
+        cv2.imshow('Result', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
