@@ -2,59 +2,57 @@ from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 
-class ImageGenerator:
-    # Initialize paths for the template, overlay, and fonts
-    def __init__(self, template_path, overlay_path, font_bold_path, font_regular_path):
-        self.template_path = template_path
-        self.overlay_path = overlay_path
-        self.font_bold_path = font_bold_path
-        self.font_regular_path = font_regular_path
-        self.max_text_width = 600  # Maximum text width
+class EnglishImageGenerator:
+    def __init__(self, template_path, avatar_path, font_bold_path, font_regular_path):
+        self.TEMPLATE_PATH = template_path
+        self.AVATAR_PATH = avatar_path
+        self.FONT_BOLD_PATH = font_bold_path
+        self.FONT_REGULAR_PATH = font_regular_path
+        self.MAX_TEXT_WIDTH = 600  # Maximum text width
 
-     # Method to truncate text if it's too long
     def truncate_text(self, draw, text, font):
         text_bbox = draw.textbbox((0, 0), text, font=font)
-        if text_bbox[2] - text_bbox[0] > self.max_text_width:
-            while text_bbox[2] - text_bbox[0] > self.max_text_width:
+        if text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
+            while text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
                 text = text[:-1]
                 text_bbox = draw.textbbox((0, 0), text + '...', font=font)
             text = text.strip() + '...'
         return text
 
-    def generate_image(self, name, profession, title_rank, output_path):
+    def generate_image(self, name, company, position, output_path):
         # Uploading and preparing the image
-        background_image = cv2.imread(self.template_path)
-        background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
+        BACKGROUND_IMAGE = cv2.imread(self.TEMPLATE_PATH)
+        BACKGROUND_PIL = Image.fromarray(cv2.cvtColor(BACKGROUND_IMAGE, cv2.COLOR_BGR2RGB))
 
-        # Uploading and resizing an overlay (logo or other image)
-        overlay_image = Image.open(self.overlay_path)
-        overlay_image = overlay_image.resize((200, 200), Image.Resampling.LANCZOS)
+        # Uploading and resizing an avatar (logo or other image)
+        AVATAR_IMAGE = Image.open(self.AVATAR_PATH)
+        AVATAR_IMAGE = AVATAR_IMAGE.resize((200, 200), Image.Resampling.LANCZOS)
 
-        # Position for overlay insertion
-        overlay_position = (50, 400)
-        background_pil.paste(overlay_image, overlay_position, overlay_image)
+        # Position for avatar insertion
+        AVATAR_POSITION = (50, 400)
+        BACKGROUND_PIL.paste(AVATAR_IMAGE, AVATAR_POSITION, AVATAR_IMAGE)
 
         # Font customization
-        font_name = ImageFont.truetype(self.font_bold_path, 50)
-        font_profession = ImageFont.truetype(self.font_regular_path, 30)
-        font_title_rank = ImageFont.truetype(self.font_regular_path, 35)
+        FONT_NAME = ImageFont.truetype(self.FONT_BOLD_PATH, 50)
+        FONT_COMPANY = ImageFont.truetype(self.FONT_REGULAR_PATH, 30)
+        FONT_POSITION = ImageFont.truetype(self.FONT_REGULAR_PATH, 35)
 
         # Creating an object for drawing
-        draw = ImageDraw.Draw(background_pil)
+        DRAW = ImageDraw.Draw(BACKGROUND_PIL)
 
         # Processing text for placement on an image
-        name = self.truncate_text(draw, name, font_name)
-        profession = self.truncate_text(draw, profession, font_profession)
-        title_rank = self.truncate_text(draw, title_rank, font_title_rank)
+        NAME = self.truncate_text(DRAW, name, FONT_NAME)
+        COMPANY = self.truncate_text(DRAW, company, FONT_COMPANY)
+        POSITION = self.truncate_text(DRAW, position, FONT_POSITION)
 
         # Overlaying text on top of an image
-        draw.text((270, 415), name, font=font_name, fill=(255, 255, 255))
-        draw.text((270, 490), profession, font=font_profession, fill=(169, 169, 165))
-        draw.text((270, 540), title_rank, font=font_title_rank, fill=(255, 255, 255))
+        DRAW.text((270, 415), NAME, font=FONT_NAME, fill=(255, 255, 255))
+        DRAW.text((270, 487), COMPANY, font=FONT_COMPANY, fill=(169, 169, 165))
+        DRAW.text((270, 540), POSITION, font=FONT_POSITION, fill=(255, 255, 255))
 
         # Convert the image back to OpenCV format and save it
-        result_image = cv2.cvtColor(np.array(background_pil), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, result_image)
-        cv2.imshow('Result', result_image)
+        RESULT_IMAGE = cv2.cvtColor(np.array(BACKGROUND_PIL), cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, RESULT_IMAGE)
+        cv2.imshow('Result', RESULT_IMAGE)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
