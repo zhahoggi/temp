@@ -1,58 +1,65 @@
-from PIL import Image, ImageDraw, ImageFont
-import cv2
-import numpy as np
+from enum import Enum
+from English import EnglishImageGenerator
+from Arabic import ArabicImageGenerator
 
-class EnglishImageGenerator:
-    def __init__(self, template_path, avatar_path, font_bold_path, font_regular_path):
-        self.TEMPLATE_PATH = template_path
-        self.AVATAR_PATH = avatar_path
-        self.FONT_BOLD_PATH = font_bold_path
-        self.FONT_REGULAR_PATH = font_regular_path
-        self.MAX_TEXT_WIDTH = 600  # Maximum text width
+# Constants for file paths
+AR_TEMPLATE_PATH = 'C:/Users/MSI/Desktop/ar-template.png'
+EN_TEMPLATE_PATH = 'C:/Users/MSI/Desktop/template.png'
+AVATAR_PATH = 'C:/Users/MSI/Desktop/gg.png'
+AR_FONT_BOLD_PATH = 'C:/Users/MSI/Desktop/NotoSansArabic-Bold.ttf'
+AR_FONT_REGULAR_PATH = 'C:/Users/MSI/Desktop/NotoSansArabic-Regular.ttf'
+EN_FONT_BOLD_PATH = 'C:/Users/MSI/Desktop/Inter_18pt-SemiBold.ttf'
+EN_FONT_REGULAR_PATH = 'C:/Users/MSI/Desktop/Inter_18pt-Regular.ttf'
+OUTPUT_FILE_PATH = 'C:/Users/MSI/Desktop/result_image.jpeg'
 
-    def truncate_text(self, draw, text, font):
-        text_bbox = draw.textbbox((0, 0), text, font=font)
-        if text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
-            while text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
-                text = text[:-1]
-                text_bbox = draw.textbbox((0, 0), text + '...', font=font)
-            text = text.strip() + '...'
-        return text
+# Enum to represent the supported languages
+class Languages(str, Enum):
+    ARABIC = "ARABIC"
+    ENGLISH = "ENGLISH"
 
-    def generate_image(self, name, company, position, output_path):
-        # Uploading and preparing the image
-        BACKGROUND_IMAGE = cv2.imread(self.TEMPLATE_PATH)
-        BACKGROUND_PIL = Image.fromarray(cv2.cvtColor(BACKGROUND_IMAGE, cv2.COLOR_BGR2RGB))
+# Class to handle image generation based on the selected language
+class ImageGenerator:
+    def __init__(self, language: Languages, name: str, company: str, position: str):
+        self.LANGUAGE = language
+        self.NAME = name
+        self.COMPANY = company
+        self.POSITION = position
+        self.IMAGE_GENERATOR = None
 
-        # Uploading and resizing an avatar (logo or other image)
-        AVATAR_IMAGE = Image.open(self.AVATAR_PATH)
-        AVATAR_IMAGE = AVATAR_IMAGE.resize((200, 200), Image.Resampling.LANCZOS)
+    # Language definition
+    def select_language(self):
+        # Configure for the selected language
+        if self.LANGUAGE == Languages.ARABIC:
+            self.IMAGE_GENERATOR = ArabicImageGenerator(
+                template_path=AR_TEMPLATE_PATH,
+                avatar_path=AVATAR_PATH,
+                font_bold_path=AR_FONT_BOLD_PATH,
+                font_regular_path=AR_FONT_REGULAR_PATH
+            )
+        elif self.LANGUAGE == Languages.ENGLISH:
+            self.IMAGE_GENERATOR = EnglishImageGenerator(
+                template_path=EN_TEMPLATE_PATH,
+                avatar_path=AVATAR_PATH,
+                font_bold_path=EN_FONT_BOLD_PATH,
+                font_regular_path=EN_FONT_REGULAR_PATH
+            )
+        else:
+            raise ValueError("Invalid language selection. Choose either 'ARABIC' or 'ENGLISH'.")
 
-        # Position for avatar insertion
-        AVATAR_POSITION = (50, 400)
-        BACKGROUND_PIL.paste(AVATAR_IMAGE, AVATAR_POSITION, AVATAR_IMAGE)
+    def generate_image(self):
+        # Configure the image generator
+        self.select_language()
+        # Generate the image using the configured generator
+        self.IMAGE_GENERATOR.generate_image(
+            name=self.NAME,
+            company=self.COMPANY,  # Using the 'COMPANY' variable
+            position=self.POSITION,  # Using the 'POSITION' variable
+            output_path=OUTPUT_FILE_PATH
+        )
 
-        # Font customization
-        FONT_NAME = ImageFont.truetype(self.FONT_BOLD_PATH, 50)
-        FONT_COMPANY = ImageFont.truetype(self.FONT_REGULAR_PATH, 30)
-        FONT_POSITION = ImageFont.truetype(self.FONT_REGULAR_PATH, 35)
+# Example usage:
+#service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
+#service_arabic.generate_image()
 
-        # Creating an object for drawing
-        DRAW = ImageDraw.Draw(BACKGROUND_PIL)
-
-        # Processing text for placement on an image
-        NAME = self.truncate_text(DRAW, name, FONT_NAME)
-        COMPANY = self.truncate_text(DRAW, company, FONT_COMPANY)
-        POSITION = self.truncate_text(DRAW, position, FONT_POSITION)
-
-        # Overlaying text on top of an image
-        DRAW.text((270, 415), NAME, font=FONT_NAME, fill=(255, 255, 255))
-        DRAW.text((270, 487), COMPANY, font=FONT_COMPANY, fill=(169, 169, 165))
-        DRAW.text((270, 540), POSITION, font=FONT_POSITION, fill=(255, 255, 255))
-
-        # Convert the image back to OpenCV format and save it
-        RESULT_IMAGE = cv2.cvtColor(np.array(BACKGROUND_PIL), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, RESULT_IMAGE)
-        cv2.imshow('Result', RESULT_IMAGE)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
+service_english.generate_image()
