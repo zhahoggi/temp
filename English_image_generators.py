@@ -4,16 +4,16 @@ import numpy as np
 
 class EnglishImageGenerator:
     def __init__(self, template_path, avatar_path, font_bold_path, font_regular_path):
-        self.TEMPLATE_PATH = template_path
-        self.AVATAR_PATH = avatar_path
-        self.FONT_BOLD_PATH = font_bold_path
-        self.FONT_REGULAR_PATH = font_regular_path
-        self.MAX_TEXT_WIDTH = 600  # Maximum text width
+        self.template_path = template_path
+        self.avatar_path = avatar_path
+        self.font_bold_path = font_bold_path
+        self.font_regular_path = font_regular_path
+        self.max_text_width = 600  # Maximum text width
 
     def truncate_text(self, draw, text, font):
         text_bbox = draw.textbbox((0, 0), text, font=font)
-        if text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
-            while text_bbox[2] - text_bbox[0] > self.MAX_TEXT_WIDTH:
+        if text_bbox[2] - text_bbox[0] > self.max_text_width:
+            while text_bbox[2] - text_bbox[0] > self.max_text_width:
                 text = text[:-1]
                 text_bbox = draw.textbbox((0, 0), text + '...', font=font)
             text = text.strip() + '...'
@@ -21,38 +21,38 @@ class EnglishImageGenerator:
 
     def generate_image(self, name, company, position, output_path):
         # Uploading and preparing the image
-        BACKGROUND_IMAGE = cv2.imread(self.TEMPLATE_PATH)
-        BACKGROUND_PIL = Image.fromarray(cv2.cvtColor(BACKGROUND_IMAGE, cv2.COLOR_BGR2RGB))
+        background_image = cv2.imread(self.template_path)
+        background_pil = Image.fromarray(cv2.cvtColor(background_image, cv2.COLOR_BGR2RGB))
 
         # Uploading and resizing an avatar (logo or other image)
-        AVATAR_IMAGE = Image.open(self.AVATAR_PATH)
-        AVATAR_IMAGE = AVATAR_IMAGE.resize((200, 200), Image.Resampling.LANCZOS)
+        avatar_image = Image.open(self.avatar_path)
+        avatar_image = avatar_image.resize((200, 200), Image.Resampling.LANCZOS)
 
         # Position for avatar insertion
-        AVATAR_POSITION = (50, 400)
-        BACKGROUND_PIL.paste(AVATAR_IMAGE, AVATAR_POSITION, AVATAR_IMAGE)
+        avatar_position = (50, 400)
+        background_pil.paste(avatar_image, avatar_position, avatar_image)
 
         # Font customization
-        FONT_NAME = ImageFont.truetype(self.FONT_BOLD_PATH, 50)
-        FONT_COMPANY = ImageFont.truetype(self.FONT_REGULAR_PATH, 30)
-        FONT_POSITION = ImageFont.truetype(self.FONT_REGULAR_PATH, 35)
+        font_name = ImageFont.truetype(self.font_bold_path, 50)
+        font_company = ImageFont.truetype(self.font_regular_path, 30)
+        font_position = ImageFont.truetype(self.font_regular_path, 35)
 
         # Creating an object for drawing
-        DRAW = ImageDraw.Draw(BACKGROUND_PIL)
+        draw = ImageDraw.Draw(background_pil)
 
         # Processing text for placement on an image
-        NAME = self.truncate_text(DRAW, name, FONT_NAME)
-        COMPANY = self.truncate_text(DRAW, company, FONT_COMPANY)
-        POSITION = self.truncate_text(DRAW, position, FONT_POSITION)
+        name = self.truncate_text(draw, name, font_name)
+        company = self.truncate_text(draw, company, font_company)
+        position = self.truncate_text(draw, position, font_position)
 
         # Overlaying text on top of an image
-        DRAW.text((270, 415), NAME, font=FONT_NAME, fill=(255, 255, 255))
-        DRAW.text((270, 487), COMPANY, font=FONT_COMPANY, fill=(169, 169, 165))
-        DRAW.text((270, 540), POSITION, font=FONT_POSITION, fill=(255, 255, 255))
+        draw.text((270, 415), name, font=font_name, fill=(255, 255, 255))
+        draw.text((270, 487), company, font=font_company, fill=(169, 169, 165))
+        draw.text((270, 540), position, font=font_position, fill=(255, 255, 255))
 
         # Convert the image back to OpenCV format and save it
-        RESULT_IMAGE = cv2.cvtColor(np.array(BACKGROUND_PIL), cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, RESULT_IMAGE)
-        cv2.imshow('Result', RESULT_IMAGE)
+        result_image = cv2.cvtColor(np.array(background_pil), cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, result_image)
+        cv2.imshow('Result', result_image)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
