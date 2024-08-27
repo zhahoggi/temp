@@ -3,14 +3,14 @@ from English import EnglishImageGenerator
 from Arabic import ArabicImageGenerator
 
 # Constants for file paths
-AR_TEMPLATE_PATH = 'C:/Users/MSI/Desktop/ar-template.png'
-EN_TEMPLATE_PATH = 'C:/Users/MSI/Desktop/template.png'
-AVATAR_PATH = 'C:/Users/MSI/Desktop/gg.png'
-AR_FONT_BOLD_PATH = 'C:/Users/MSI/Desktop/NotoSansArabic-Bold.ttf'
-AR_FONT_REGULAR_PATH = 'C:/Users/MSI/Desktop/NotoSansArabic-Regular.ttf'
-EN_FONT_BOLD_PATH = 'C:/Users/MSI/Desktop/Inter_18pt-SemiBold.ttf'
-EN_FONT_REGULAR_PATH = 'C:/Users/MSI/Desktop/Inter_18pt-Regular.ttf'
-OUTPUT_FILE_PATH = 'C:/Users/MSI/Desktop/result_image.jpeg'
+AR_TEMPLATE_PATH = './ar-template.png'
+EN_TEMPLATE_PATH = './template.png'
+AVATAR_PATH = './gg.png'
+AR_FONT_BOLD_PATH = './NotoSansArabic-Bold.ttf'
+AR_FONT_REGULAR_PATH = './NotoSansArabic-Regular.ttf'
+EN_FONT_BOLD_PATH = './Inter_18pt-SemiBold.ttf'
+EN_FONT_REGULAR_PATH = './Inter_18pt-Regular.ttf'
+OUTPUT_FILE_PATH = './result_image.jpeg'
 
 # Enum to represent the supported languages
 class Languages(str, Enum):
@@ -57,8 +57,8 @@ class ImageGenerator:
         )
 
 # Example usage:
-#service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
-#service_arabic.generate_image()
+service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
+service_arabic.generate_image()
 
-service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
-service_english.generate_image()
+# service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
+# service_english.generate_image()
