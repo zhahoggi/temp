@@ -20,23 +20,23 @@ class Languages(str, Enum):
 # Class to handle image generation based on the selected language
 class ImageGenerator:
     def __init__(self, language: Languages, name: str, company: str, position: str):
-        self.LANGUAGE = language
-        self.NAME = name
-        self.COMPANY = company
-        self.POSITION = position
+        self.language = language
+        self.name = name
+        self.company = company
+        self.position = position
 
     # Language definition
     def select_language(self):
         # Configure for the selected language
-        if self.LANGUAGE == Languages.ARABIC:
-            self.IMAGE_GENERATOR = ArabicImageGenerator(
+        if self.language == Languages.ARABIC:
+            self.image_generator = ArabicImageGenerator(
                 template_path=AR_TEMPLATE_PATH,
                 avatar_path=AVATAR_PATH,
                 font_bold_path=AR_FONT_BOLD_PATH,
                 font_regular_path=AR_FONT_REGULAR_PATH
             )
-        elif self.LANGUAGE == Languages.ENGLISH:
-            self.IMAGE_GENERATOR = EnglishImageGenerator(
+        elif self.language == Languages.ENGLISH:
+            self.image_generator = EnglishImageGenerator(
                 template_path=EN_TEMPLATE_PATH,
                 avatar_path=AVATAR_PATH,
                 font_bold_path=EN_FONT_BOLD_PATH,
@@ -49,16 +49,16 @@ class ImageGenerator:
         # Configure the image generator
         self.select_language()
         # Generate the image using the configured generator
-        self.IMAGE_GENERATOR.generate_image(
-            name=self.NAME,
-            company=self.COMPANY,  
-            position=self.POSITION,  
+        self.image_generator.generate_image(
+            name=self.name,
+            company=self.company,
+            position=self.position,
             output_path=OUTPUT_FILE_PATH
         )
 
 # Example usage:
-service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
-service_arabic.generate_image()
+#service_arabic = ImageGenerator(language=Languages.ARABIC, name='محمد العلي', company='شركة البرمجيات', position='مطور أول')
+#service_arabic.generate_image()
 
-#service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
-#service_english.generate_image()
+service_english = ImageGenerator(language=Languages.ENGLISH, name='John Doe', company='Tech Corp', position='Senior Developer')
+service_english.generate_image()
